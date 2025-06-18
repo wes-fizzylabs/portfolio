@@ -6,7 +6,10 @@ import { GameLoop } from "./components/GameLoop.ts";
 import { GameCamera } from "./components/GameCamera.ts";
 import { GameRenderer } from "./components/GameRenderer.ts";
 import { GameStateManager, GameState } from "./components/GameStateManager.ts";
-import { EntryOverlay } from "./components/EntryOverlay.tsx";
+import { WorkHistoryEntry } from "./components/WorkHistoryEntry.tsx";
+import { PersonalEntry } from "./components/PersonalEntry.tsx";
+import { HobbiesEntry } from "./components/HobbiesEntry.tsx";
+import { RandomEntry } from "./components/RandomEntry.tsx";
 import "./App.css";
 
 function App() {
@@ -28,7 +31,7 @@ function App() {
 
         gameStateManager.setStateChangeCallback((newState: GameState) => {
           setGameState(newState);
-          if (newState === 'entry-overlay') {
+          if (newState.startsWith('entry-')) {
             const savedPosition = gameStateManager.getSavedPosition();
             if (savedPosition) {
               setEntryPosition({
@@ -77,8 +80,26 @@ function App() {
         id="wes_com"
         style={{ display: gameState === 'playing' ? 'block' : 'none' }}
       ></canvas>
-      {gameState === 'entry-overlay' && (
-        <EntryOverlay 
+      {gameState === 'entry-work' && (
+        <WorkHistoryEntry 
+          onReturnToMap={handleReturnToMap}
+          entryPosition={entryPosition}
+        />
+      )}
+      {gameState === 'entry-personal' && (
+        <PersonalEntry 
+          onReturnToMap={handleReturnToMap}
+          entryPosition={entryPosition}
+        />
+      )}
+      {gameState === 'entry-hobbies' && (
+        <HobbiesEntry 
+          onReturnToMap={handleReturnToMap}
+          entryPosition={entryPosition}
+        />
+      )}
+      {gameState === 'entry-random' && (
+        <RandomEntry 
           onReturnToMap={handleReturnToMap}
           entryPosition={entryPosition}
         />

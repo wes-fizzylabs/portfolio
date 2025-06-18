@@ -135,7 +135,9 @@ export class GameLoop {
         entryCollision
       );
       
-      this.gameStateManager.enterEntryOverlay();
+      if (entryCollision.entryType) {
+        this.gameStateManager.enterEntry(entryCollision.entryType);
+      }
       this.lastEntryCollision = entryCollision;
     } else if (!entryCollision) {
       this.lastEntryCollision = null;

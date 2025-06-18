@@ -12,7 +12,7 @@
   image-rendering: pixelated;
   image-rendering: -moz-crisp-edges;
   image-rendering: crisp-edges;
-  animation: jrpgFadeIn 0.3s steps(8, end);
+  animation: jrpgFadeIn 1s steps(8, end);
 }
 
 @keyframes jrpgFadeIn {

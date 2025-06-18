@@ -8,6 +8,7 @@ import { Player } from './Player.ts';
 export interface ICollisionObject {
   type: 'boundary' | 'entry';
   mesh: Mesh;
+  entryType?: 'work' | 'personal' | 'hobbies' | 'random';
 }
 
 export class CollisionManager {
@@ -46,6 +47,9 @@ export class CollisionManager {
       entryMap.push(entries.slice(i, i + 50));
     }
 
+    const entryTypes: ('work' | 'personal' | 'hobbies' | 'random')[] = ['work', 'personal', 'hobbies', 'random'];
+    let entryIndex = 0;
+
     entryMap.forEach((row, i) => {
       row.forEach((el, j) => {
         if (el === MAP_CONSTANTS.ENTRY) {
@@ -55,7 +59,9 @@ export class CollisionManager {
           });
           let _collider = createdEntry.getColliderObject();
           _collider.mesh.scale.set(4, 4, 4);
+          _collider.entryType = entryTypes[entryIndex % entryTypes.length];
           this.entryPoints.push(_collider);
+          entryIndex++;
         }
       });
     });
