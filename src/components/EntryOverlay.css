@@ -1,0 +1,250 @@
+/* JRPG Style Overlay - Pokemon Inspired */
+.jrpg-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  image-rendering: pixelated;
+  image-rendering: -moz-crisp-edges;
+  image-rendering: crisp-edges;
+  animation: jrpgFadeIn 0.3s steps(8, end);
+}
+
+@keyframes jrpgFadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.jrpg-background {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: 
+    linear-gradient(45deg, #1a237e 25%, transparent 25%), 
+    linear-gradient(-45deg, #1a237e 25%, transparent 25%), 
+    linear-gradient(45deg, transparent 75%, #1a237e 75%), 
+    linear-gradient(-45deg, transparent 75%, #1a237e 75%);
+  background-size: 8px 8px;
+  background-position: 0 0, 0 4px, 4px -4px, -4px 0px;
+  background-color: #303f9f;
+  opacity: 0.95;
+}
+
+.jrpg-dialog-container {
+  position: relative;
+  z-index: 1001;
+  max-width: 560px;
+  width: 90%;
+}
+
+.jrpg-dialog-box {
+  background: #f5f5f5;
+  border: 4px solid #000;
+  box-shadow: 
+    inset -2px -2px 0px #999,
+    inset 2px 2px 0px #fff,
+    4px 4px 0px #000;
+  margin-bottom: 16px;
+}
+
+.jrpg-dialog-border {
+  border: 2px solid #666;
+  margin: 4px;
+  background: #e8e8e8;
+}
+
+.jrpg-dialog-content {
+  padding: 16px;
+  font-family: 'Courier New', monospace;
+  font-size: 14px;
+  line-height: 1.4;
+  color: #000;
+}
+
+.jrpg-title-bar {
+  background: #4a90e2;
+  color: #fff;
+  padding: 8px 12px;
+  margin: -16px -16px 16px -16px;
+  border-bottom: 2px solid #000;
+  text-align: center;
+  font-weight: bold;
+  letter-spacing: 1px;
+  text-shadow: 1px 1px 0px #000;
+}
+
+.jrpg-title-text {
+  font-size: 16px;
+}
+
+.jrpg-message-area {
+  margin-bottom: 16px;
+}
+
+.jrpg-message-text {
+  margin: 0 0 8px 0;
+  padding: 4px 0;
+  color: #222;
+  font-weight: bold;
+}
+
+.jrpg-info-box {
+  background: #d3d3d3;
+  border: 2px solid #000;
+  padding: 12px;
+  margin: 16px 0;
+  box-shadow: inset -1px -1px 0px #999, inset 1px 1px 0px #fff;
+}
+
+.jrpg-info-title {
+  font-weight: bold;
+  color: #000;
+  margin-bottom: 8px;
+  text-align: center;
+  font-size: 12px;
+  letter-spacing: 1px;
+}
+
+.jrpg-coordinates {
+  display: flex;
+  justify-content: space-around;
+  font-family: 'Courier New', monospace;
+  font-weight: bold;
+  color: #000;
+  font-size: 13px;
+}
+
+.jrpg-options-box {
+  background: #fff;
+  border: 2px solid #000;
+  padding: 12px;
+  margin: 16px 0;
+  box-shadow: inset -1px -1px 0px #ccc, inset 1px 1px 0px #fff;
+}
+
+.jrpg-option-title {
+  font-weight: bold;
+  color: #000;
+  margin-bottom: 8px;
+  text-align: center;
+  font-size: 12px;
+  letter-spacing: 1px;
+}
+
+.jrpg-option-list {
+  color: #333;
+}
+
+.jrpg-option-item {
+  margin: 4px 0;
+  padding-left: 8px;
+  font-size: 13px;
+}
+
+.jrpg-button-container {
+  display: flex;
+  justify-content: center;
+}
+
+.jrpg-button {
+  background: #4a90e2;
+  color: #fff;
+  border: 4px solid #000;
+  box-shadow: 
+    inset -2px -2px 0px #2968a3,
+    inset 2px 2px 0px #6bb6ff,
+    2px 2px 0px #000;
+  padding: 12px 24px;
+  font-family: 'Courier New', monospace;
+  font-size: 14px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: none;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 200px;
+  justify-content: center;
+}
+
+.jrpg-button:hover {
+  background: #357abd;
+  box-shadow: 
+    inset -2px -2px 0px #1e4a7a,
+    insel 2px 2px 0px #5aa3f0,
+    2px 2px 0px #000;
+}
+
+.jrpg-button:active {
+  box-shadow: 
+    inset 2px 2px 0px #2968a3,
+    inset -1px -1px 0px #6bb6ff,
+    1px 1px 0px #000;
+  transform: translate(1px, 1px);
+}
+
+.jrpg-button-arrow {
+  font-size: 12px;
+  color: #fff;
+  text-shadow: 1px 1px 0px #000;
+}
+
+.jrpg-button-text {
+  color: #fff;
+  text-shadow: 1px 1px 0px #000;
+}
+
+/* Mobile Responsive */
+@media (max-width: 768px) {
+  .jrpg-dialog-container {
+    width: 95%;
+    max-width: none;
+  }
+  
+  .jrpg-dialog-content {
+    padding: 12px;
+    font-size: 13px;
+  }
+  
+  .jrpg-title-text {
+    font-size: 14px;
+  }
+  
+  .jrpg-button {
+    padding: 10px 20px;
+    font-size: 13px;
+    min-width: 180px;
+  }
+}
+
+/* Pixel-perfect scaling for retro feel */
+@media (min-width: 1200px) {
+  .jrpg-dialog-container {
+    transform: scale(1.2);
+  }
+}
+
+/* Add subtle animation to dialog box */
+.jrpg-dialog-box {
+  animation: jrpgSlideIn 0.2s steps(4, end);
+}
+
+@keyframes jrpgSlideIn {
+  from {
+    transform: translateY(-20px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
