@@ -52,6 +52,10 @@ export class GameRenderer {
     collisionManager.getEntryPoints().forEach((entry) => {
       entry.mesh.renderOrder = 1;
       this.scene.add(entry.mesh);
+      
+      if (entry.visualMesh) {
+        this.scene.add(entry.visualMesh);
+      }
     });
   }
 
