@@ -19,7 +19,7 @@ export const RandomEntry: React.FC<RandomEntryProps> = ({
           <div className="jrpg-dialog-border">
             <div className="jrpg-dialog-content">
               <div className="jrpg-title-bar">
-                <span className="jrpg-title-text">Placeholder</span>
+                <span className="jrpg-title-text">Wes's House</span>
               </div>
               
               <div className="jrpg-message-area">
@@ -33,16 +33,6 @@ export const RandomEntry: React.FC<RandomEntryProps> = ({
                   Unexpected surprises, fun facts, and quirky discoveries await!
                 </p>
               </div>
-
-              {entryPosition && (
-                <div className="jrpg-info-box">
-                  <div className="jrpg-info-title">NEXUS COORDINATES</div>
-                  <div className="jrpg-coordinates">
-                    <span>X: {Math.round(entryPosition.x).toString().padStart(4, '0')}</span>
-                    <span>Y: {Math.round(entryPosition.y).toString().padStart(4, '0')}</span>
-                  </div>
-                </div>
-              )}
 
               <div className="jrpg-options-box">
                 <div className="jrpg-option-title">RANDOM ENCOUNTERS</div>
