@@ -18,6 +18,7 @@ export class GameLoop {
   private lastEntryCollision: ICollisionObject | null = null;
   private isAnimating: boolean = false;
   private currentAnimatedEntry: ICollisionObject | null = null;
+  private lastTime: number = 0;
 
   constructor(
     player: Player,
@@ -42,13 +43,17 @@ export class GameLoop {
   }
 
   public start() {
-    this.loop();
+    this.lastTime = performance.now();
+    this.loop(this.lastTime);
   }
 
-  private loop = () => {
+  private loop = (currentTime: number) => {
+    const deltaTime = Math.min(currentTime - this.lastTime, 33.33); // Cap at ~30fps to prevent large jumps
+    this.lastTime = currentTime;
+    
     if (this.gameStateManager.getCurrentState() === 'playing') {
       if (!this.isAnimating) {
-        this.updateMovement();
+        this.updateMovement(deltaTime);
         this.updatePlayerRest();
         this.checkEntryCollisions();
       }
@@ -63,74 +68,126 @@ export class GameLoop {
     }
   }
 
-  private updateMovement() {
-    const directions: { key: KeyCode; direction: 'up' | 'down' | 'left' | 'right' }[] = [
-      { key: 'KeyW', direction: 'up' },
-      { key: 'KeyA', direction: 'left' },
-      { key: 'KeyS', direction: 'down' },
-      { key: 'KeyD', direction: 'right' }
-    ];
-
-    for (const { key, direction } of directions) {
-      if (this.inputHandler.isKeyPressed(key) && this.inputHandler.lastKeyPressed === key) {
-        if (!this.collisionManager.checkCollision(this.player, direction)) {
-          this.moveWorld(direction);
-        }
-        this.player.setDirection(direction);
-        break;
+  private updateMovement(deltaTime: number) {
+    const pressedKeys = this.inputHandler.getKeys();
+    
+    // Calculate net movement direction
+    let netX = 0;
+    let netY = 0;
+    
+    if (pressedKeys.KeyW) netY += 1;  // up
+    if (pressedKeys.KeyS) netY -= 1;  // down
+    if (pressedKeys.KeyA) netX -= 1;  // left
+    if (pressedKeys.KeyD) netX += 1;  // right
+    
+    // If no movement or opposite keys cancel out
+    if (netX === 0 && netY === 0) {
+      return;
+    }
+    
+    // Determine primary and secondary directions
+    let primaryDirection: 'up' | 'down' | 'left' | 'right' | null = null;
+    let secondaryDirection: 'up' | 'down' | 'left' | 'right' | null = null;
+    
+    if (netY > 0) primaryDirection = 'up';
+    else if (netY < 0) primaryDirection = 'down';
+    
+    if (netX > 0) {
+      if (primaryDirection) secondaryDirection = 'right';
+      else primaryDirection = 'right';
+    } else if (netX < 0) {
+      if (primaryDirection) secondaryDirection = 'left';
+      else primaryDirection = 'left';
+    }
+    
+    // Check collision for primary direction
+    let canMovePrimary = primaryDirection ? !this.collisionManager.checkCollision(this.player, primaryDirection) : false;
+    let canMoveSecondary = secondaryDirection ? !this.collisionManager.checkCollision(this.player, secondaryDirection) : false;
+    
+    // Move in available directions with normalized speed and delta time
+    const isDiagonal = canMovePrimary && canMoveSecondary && primaryDirection && secondaryDirection;
+    const speedMultiplier = isDiagonal ? 0.707 : 1.0; // 1/√2 for diagonal movement
+    
+    if (canMovePrimary && primaryDirection) {
+      this.moveWorld(primaryDirection, speedMultiplier, deltaTime);
+    }
+    if (canMoveSecondary && secondaryDirection) {
+      this.moveWorld(secondaryDirection, speedMultiplier, deltaTime);
+    }
+    
+    // Set player sprite direction (prioritize the last pressed key if both directions are available)
+    if (primaryDirection && secondaryDirection) {
+      // Use the last pressed key to determine sprite direction
+      const lastKey = this.inputHandler.lastKeyPressed;
+      const directionMap: Record<KeyCode, 'up' | 'down' | 'left' | 'right'> = {
+        KeyW: 'up',
+        KeyS: 'down',
+        KeyA: 'left',
+        KeyD: 'right'
+      };
+      
+      if (lastKey && pressedKeys[lastKey]) {
+        this.player.setDirection(directionMap[lastKey]);
+      } else {
+        this.player.setDirection(primaryDirection);
       }
+    } else if (primaryDirection) {
+      this.player.setDirection(primaryDirection);
     }
   }
 
-  private moveWorld(direction: 'up' | 'down' | 'left' | 'right') {
-    const speed = PLAYER_CONSTANTS.SPEED;
+  private moveWorld(direction: 'up' | 'down' | 'left' | 'right', speedMultiplier: number = 1.0, deltaTime: number = 16.67) {
+    // Convert speed from pixels per frame to pixels per second (assuming 60fps base)
+    const baseSpeed = PLAYER_CONSTANTS.SPEED * 60; // pixels per second
+    const rawSpeed = (baseSpeed * speedMultiplier * deltaTime) / 1000; // pixels per frame adjusted for actual frame time
+    const speed = Math.round(rawSpeed * 100) / 100; // Round to 2 decimal places to prevent micro-movements
 
     switch (direction) {
       case 'up':
-        this.background.position.y -= speed;
+        this.background.position.y = Math.round((this.background.position.y - speed) * 100) / 100;
         this.collisionManager.getColliders().forEach((boundary) => {
-          boundary.mesh.position.y -= speed;
+          boundary.mesh.position.y = Math.round((boundary.mesh.position.y - speed) * 100) / 100;
         });
         this.collisionManager.getEntryPoints().forEach((entry) => {
-          entry.mesh.position.y -= speed;
+          entry.mesh.position.y = Math.round((entry.mesh.position.y - speed) * 100) / 100;
           if (entry.visualMesh) {
-            entry.visualMesh.position.y -= speed;
+            entry.visualMesh.position.y = Math.round((entry.visualMesh.position.y - speed) * 100) / 100;
           }
         });
         break;
       case 'down':
-        this.background.position.y += speed;
+        this.background.position.y = Math.round((this.background.position.y + speed) * 100) / 100;
         this.collisionManager.getColliders().forEach((boundary) => {
-          boundary.mesh.position.y += speed;
+          boundary.mesh.position.y = Math.round((boundary.mesh.position.y + speed) * 100) / 100;
         });
         this.collisionManager.getEntryPoints().forEach((entry) => {
-          entry.mesh.position.y += speed;
+          entry.mesh.position.y = Math.round((entry.mesh.position.y + speed) * 100) / 100;
           if (entry.visualMesh) {
-            entry.visualMesh.position.y += speed;
+            entry.visualMesh.position.y = Math.round((entry.visualMesh.position.y + speed) * 100) / 100;
           }
         });
         break;
       case 'left':
-        this.background.position.x += speed;
+        this.background.position.x = Math.round((this.background.position.x + speed) * 100) / 100;
         this.collisionManager.getColliders().forEach((boundary) => {
-          boundary.mesh.position.x += speed;
+          boundary.mesh.position.x = Math.round((boundary.mesh.position.x + speed) * 100) / 100;
         });
         this.collisionManager.getEntryPoints().forEach((entry) => {
-          entry.mesh.position.x += speed;
+          entry.mesh.position.x = Math.round((entry.mesh.position.x + speed) * 100) / 100;
           if (entry.visualMesh) {
-            entry.visualMesh.position.x += speed;
+            entry.visualMesh.position.x = Math.round((entry.visualMesh.position.x + speed) * 100) / 100;
           }
         });
         break;
       case 'right':
-        this.background.position.x -= speed;
+        this.background.position.x = Math.round((this.background.position.x - speed) * 100) / 100;
         this.collisionManager.getColliders().forEach((boundary) => {
-          boundary.mesh.position.x -= speed;
+          boundary.mesh.position.x = Math.round((boundary.mesh.position.x - speed) * 100) / 100;
         });
         this.collisionManager.getEntryPoints().forEach((entry) => {
-          entry.mesh.position.x -= speed;
+          entry.mesh.position.x = Math.round((entry.mesh.position.x - speed) * 100) / 100;
           if (entry.visualMesh) {
-            entry.visualMesh.position.x -= speed;
+            entry.visualMesh.position.x = Math.round((entry.visualMesh.position.x - speed) * 100) / 100;
           }
         });
         break;
