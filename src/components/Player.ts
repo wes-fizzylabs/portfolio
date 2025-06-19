@@ -33,8 +33,18 @@ export class Player {
     const playerLeftTexture = textureLoader.load('/assets/players/playerLeft.png');
     const playerRightTexture = textureLoader.load('/assets/players/playerRight.png');
 
+    // Set initial texture coordinates for all textures
+    playerUpTexture.offset.set(0, 0);
+    playerUpTexture.repeat.set(GAME_CONSTANTS.FRAME_WIDTH, GAME_CONSTANTS.FRAME_HEIGHT);
+    
     playerDownTexture.offset.set(0, 0);
-    playerDownTexture.repeat.set(0.25, 1);
+    playerDownTexture.repeat.set(GAME_CONSTANTS.FRAME_WIDTH, GAME_CONSTANTS.FRAME_HEIGHT);
+    
+    playerLeftTexture.offset.set(0, 0);
+    playerLeftTexture.repeat.set(GAME_CONSTANTS.FRAME_WIDTH, GAME_CONSTANTS.FRAME_HEIGHT);
+    
+    playerRightTexture.offset.set(0, 0);
+    playerRightTexture.repeat.set(GAME_CONSTANTS.FRAME_WIDTH, GAME_CONSTANTS.FRAME_HEIGHT);
 
     this.materials = {
       up: new SpriteMaterial({ map: playerUpTexture }),
