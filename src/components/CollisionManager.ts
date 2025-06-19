@@ -1,4 +1,4 @@
-import { Mesh, PlaneGeometry, MeshBasicMaterial } from 'three';
+import { Mesh, PlaneGeometry, MeshBasicMaterial, Color } from 'three';
 import { boundaries } from './boundaries.ts';
 import { entries } from './entries.ts';
 import { MAP_CONSTANTS } from '../constants.tsx';
@@ -8,6 +8,9 @@ import { Player } from './Player.ts';
 export interface ICollisionObject {
   type: 'boundary' | 'entry';
   mesh: Mesh;
+  entryType?: 'work' | 'personal' | 'hobbies' | 'random';
+  visualMesh?: Mesh;
+  originalColor?: Color;
 }
 
 export class CollisionManager {
@@ -46,6 +49,9 @@ export class CollisionManager {
       entryMap.push(entries.slice(i, i + 50));
     }
 
+    const entryTypes: ('work' | 'personal' | 'hobbies' | 'random')[] = ['work', 'personal', 'hobbies', 'random'];
+    let entryIndex = 0;
+
     entryMap.forEach((row, i) => {
       row.forEach((el, j) => {
         if (el === MAP_CONSTANTS.ENTRY) {
@@ -55,7 +61,24 @@ export class CollisionManager {
           });
           let _collider = createdEntry.getColliderObject();
           _collider.mesh.scale.set(4, 4, 4);
+          _collider.entryType = entryTypes[entryIndex % entryTypes.length];
+
+          const visualGeometry = new PlaneGeometry(16, 16);
+          const visualMaterial = new MeshBasicMaterial({
+            color: 0x000000,
+            transparent: true,
+            opacity: 0
+          });
+          const visualMesh = new Mesh(visualGeometry, visualMaterial);
+          visualMesh.position.copy(_collider.mesh.position);
+          visualMesh.scale.set(4, 4, 4);
+          visualMesh.renderOrder = -1;
+
+          _collider.visualMesh = visualMesh;
+          _collider.originalColor = new Color(0x000000);
+
           this.entryPoints.push(_collider);
+          entryIndex++;
         }
       });
     });
@@ -75,7 +98,7 @@ export class CollisionManager {
 
   public checkCollision(player: Player, direction: 'up' | 'down' | 'left' | 'right'): boolean {
     const offset = this.getDirectionOffset(direction);
-    
+
     for (let i = 0; i < this.mapBounds.length; i++) {
       if (isCollided({
         rect1: player.sprite,
@@ -119,6 +142,41 @@ export class CollisionManager {
       case 'right': return { x: -3, y: 0 };
     }
   }
+
+  public animateEntryDoorOpening(entry: ICollisionObject): Promise<void> {
+    return new Promise((resolve) => {
+      if (!entry.visualMesh) {
+        resolve();
+        return;
+      }
+
+      const startTime = performance.now();
+      const duration = 300;
+      const material = entry.visualMesh.material as MeshBasicMaterial;
+
+      const animate = () => {
+        const elapsed = performance.now() - startTime;
+        const progress = Math.min(elapsed / duration, 1);
+
+        material.opacity = progress;
+
+        if (progress < 1) {
+          requestAnimationFrame(animate);
+        } else {
+          resolve();
+        }
+      };
+
+      requestAnimationFrame(animate);
+    });
+  }
+
+  public resetEntryToTransparent(entry: ICollisionObject): void {
+    if (entry.visualMesh) {
+      const material = entry.visualMesh.material as MeshBasicMaterial;
+      material.opacity = 0;
+    }
+  }
 }
 
 class Collider {
@@ -129,7 +187,7 @@ class Collider {
 
   constructor(type: 'boundary' | 'entry', position: { x: number; y: number }) {
     const geometry = new PlaneGeometry(16, 16);
-    const material = new MeshBasicMaterial({ opacity: 0, color: 0x000000, transparent: false });
+    const material = new MeshBasicMaterial({ opacity: 0, transparent: true });
     this.collisionObject.mesh = new Mesh(geometry, material);
     this.collisionObject.mesh.position.set(position.x, position.y, 0);
     this.collisionObject.type = type;

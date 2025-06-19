@@ -12,7 +12,7 @@
   image-rendering: pixelated;
   image-rendering: -moz-crisp-edges;
   image-rendering: crisp-edges;
-  animation: jrpgFadeIn 0.3s steps(8, end);
+  animation: jrpgFadeIn .35s steps(8, end);
 }
 
 @keyframes jrpgFadeIn {
@@ -39,8 +39,9 @@
 
 .jrpg-dialog-container {
   position: relative;
-  z-index: 1001;
-  max-width: 560px;
+  z-index: 100;
+  max-width: 1400px;
+  min-width: 320px;
   width: 90%;
 }
 

@@ -2,7 +2,7 @@ import { Mesh } from 'three';
 import { ICollisionObject } from './CollisionManager';
 import { Player } from './Player';
 
-export type GameState = 'playing' | 'entry-overlay';
+export type GameState = 'playing' | 'entry-work' | 'entry-personal' | 'entry-hobbies' | 'entry-random';
 
 export interface SavedGamePosition {
   playerPosition: { x: number; y: number; z: number };
@@ -59,8 +59,8 @@ export class GameStateManager {
     };
   }
 
-  public enterEntryOverlay() {
-    this.currentState = 'entry-overlay';
+  public enterEntry(entryType: 'work' | 'personal' | 'hobbies' | 'random') {
+    this.currentState = `entry-${entryType}` as GameState;
     if (this.stateChangeCallback) {
       this.stateChangeCallback(this.currentState);
     }
