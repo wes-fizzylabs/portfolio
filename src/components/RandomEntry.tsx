@@ -9,7 +9,7 @@ interface RandomEntryProps {
 export const RandomEntry: React.FC<RandomEntryProps> = ({ 
   onReturnToMap, 
   entryPosition 
-}) => {
+}: RandomEntryProps) => {
   return (
     <div className="jrpg-overlay">
       <div className="jrpg-background"></div>

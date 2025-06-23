@@ -14,7 +14,7 @@ export class GameLoop {
   private camera: OrthographicCamera;
   private scene: Scene;
   private background: Mesh;
-  private movables: (Mesh | ICollisionObject)[] = [];
+  private movables: (Mesh | ICollisionObject)[] = []; // Used for collision detection
   private lastEntryCollision: ICollisionObject | null = null;
   private isAnimating: boolean = false;
   private currentAnimatedEntry: ICollisionObject | null = null;
@@ -48,7 +48,7 @@ export class GameLoop {
   }
 
   private loop = (currentTime: number) => {
-    const deltaTime = Math.min(currentTime - this.lastTime, 33.33); // Cap at ~30fps to prevent large jumps
+    const deltaTime = currentTime - this.lastTime;
     this.lastTime = currentTime;
     
     if (this.gameStateManager.getCurrentState() === 'playing') {
@@ -137,57 +137,55 @@ export class GameLoop {
   }
 
   private moveWorld(direction: 'up' | 'down' | 'left' | 'right', speedMultiplier: number = 1.0, deltaTime: number = 16.67) {
-    // Convert speed from pixels per frame to pixels per second (assuming 60fps base)
-    const baseSpeed = PLAYER_CONSTANTS.SPEED * 60; // pixels per second
-    const rawSpeed = (baseSpeed * speedMultiplier * deltaTime) / 1000; // pixels per frame adjusted for actual frame time
-    const speed = Math.round(rawSpeed * 100) / 100; // Round to 2 decimal places to prevent micro-movements
+    // Maintain original movement distance
+    const speed = PLAYER_CONSTANTS.SPEED * speedMultiplier * (deltaTime / 16.67);
 
     switch (direction) {
       case 'up':
-        this.background.position.y = Math.round((this.background.position.y - speed) * 100) / 100;
+        this.background.position.y -= speed;
         this.collisionManager.getColliders().forEach((boundary) => {
-          boundary.mesh.position.y = Math.round((boundary.mesh.position.y - speed) * 100) / 100;
+          boundary.mesh.position.y -= speed;
         });
         this.collisionManager.getEntryPoints().forEach((entry) => {
-          entry.mesh.position.y = Math.round((entry.mesh.position.y - speed) * 100) / 100;
+          entry.mesh.position.y -= speed;
           if (entry.visualMesh) {
-            entry.visualMesh.position.y = Math.round((entry.visualMesh.position.y - speed) * 100) / 100;
+            entry.visualMesh.position.y -= speed;
           }
         });
         break;
       case 'down':
-        this.background.position.y = Math.round((this.background.position.y + speed) * 100) / 100;
+        this.background.position.y += speed;
         this.collisionManager.getColliders().forEach((boundary) => {
-          boundary.mesh.position.y = Math.round((boundary.mesh.position.y + speed) * 100) / 100;
+          boundary.mesh.position.y += speed;
         });
         this.collisionManager.getEntryPoints().forEach((entry) => {
-          entry.mesh.position.y = Math.round((entry.mesh.position.y + speed) * 100) / 100;
+          entry.mesh.position.y += speed;
           if (entry.visualMesh) {
-            entry.visualMesh.position.y = Math.round((entry.visualMesh.position.y + speed) * 100) / 100;
+            entry.visualMesh.position.y += speed;
           }
         });
         break;
       case 'left':
-        this.background.position.x = Math.round((this.background.position.x + speed) * 100) / 100;
+        this.background.position.x += speed;
         this.collisionManager.getColliders().forEach((boundary) => {
-          boundary.mesh.position.x = Math.round((boundary.mesh.position.x + speed) * 100) / 100;
+          boundary.mesh.position.x += speed;
         });
         this.collisionManager.getEntryPoints().forEach((entry) => {
-          entry.mesh.position.x = Math.round((entry.mesh.position.x + speed) * 100) / 100;
+          entry.mesh.position.x += speed;
           if (entry.visualMesh) {
-            entry.visualMesh.position.x = Math.round((entry.visualMesh.position.x + speed) * 100) / 100;
+            entry.visualMesh.position.x += speed;
           }
         });
         break;
       case 'right':
-        this.background.position.x = Math.round((this.background.position.x - speed) * 100) / 100;
+        this.background.position.x -= speed;
         this.collisionManager.getColliders().forEach((boundary) => {
-          boundary.mesh.position.x = Math.round((boundary.mesh.position.x - speed) * 100) / 100;
+          boundary.mesh.position.x -= speed;
         });
         this.collisionManager.getEntryPoints().forEach((entry) => {
-          entry.mesh.position.x = Math.round((entry.mesh.position.x - speed) * 100) / 100;
+          entry.mesh.position.x -= speed;
           if (entry.visualMesh) {
-            entry.visualMesh.position.x = Math.round((entry.visualMesh.position.x - speed) * 100) / 100;
+            entry.visualMesh.position.x -= speed;
           }
         });
         break;

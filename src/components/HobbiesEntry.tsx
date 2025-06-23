@@ -9,7 +9,7 @@ interface HobbiesEntryProps {
 export const HobbiesEntry: React.FC<HobbiesEntryProps> = ({ 
   onReturnToMap, 
   entryPosition 
-}) => {
+}: HobbiesEntryProps) => {
   return (
     <div className="jrpg-overlay">
       <div className="jrpg-background"></div>

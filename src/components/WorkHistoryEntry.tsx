@@ -9,7 +9,7 @@ interface WorkHistoryEntryProps {
 export const WorkHistoryEntry: React.FC<WorkHistoryEntryProps> = ({ 
   onReturnToMap, 
   entryPosition 
-}) => {
+}: WorkHistoryEntryProps) => {
   return (
     <div className="jrpg-overlay">
       <div className="jrpg-background"></div>

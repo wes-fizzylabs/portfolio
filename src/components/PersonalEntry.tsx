@@ -9,7 +9,7 @@ interface PersonalEntryProps {
 export const PersonalEntry: React.FC<PersonalEntryProps> = ({ 
   onReturnToMap, 
   entryPosition 
-}) => {
+}: PersonalEntryProps) => {
   return (
     <div className="jrpg-overlay">
       <div className="jrpg-background"></div>
