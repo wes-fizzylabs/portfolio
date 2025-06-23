@@ -10,6 +10,7 @@ import { WorkHistoryEntry } from "./components/WorkHistoryEntry.tsx";
 import { PersonalEntry } from "./components/PersonalEntry.tsx";
 import { HobbiesEntry } from "./components/HobbiesEntry.tsx";
 import { RandomEntry } from "./components/RandomEntry.tsx";
+import { WASDIndicator } from "./components/WASDIndicator.tsx";
 import "./App.css";
 
 function App() {
@@ -17,6 +18,13 @@ function App() {
   const [gameState, setGameState] = useState<GameState>('playing');
   const [gameLoop, setGameLoop] = useState<GameLoop | null>(null);
   const [entryPosition, setEntryPosition] = useState<{ x: number; y: number } | undefined>();
+  const [inputHandler, setInputHandler] = useState<InputHandler | null>(null);
+  const [pressedKeys, setPressedKeys] = useState({
+    KeyW: false,
+    KeyA: false,
+    KeyS: false,
+    KeyD: false
+  });
 
   useEffect(() => {
     const canvas = mapRef.current;
@@ -28,6 +36,8 @@ function App() {
         const inputHandler = new InputHandler();
         const collisionManager = new CollisionManager();
         const gameStateManager = new GameStateManager();
+
+        setInputHandler(inputHandler);
 
         gameStateManager.setStateChangeCallback((newState: GameState) => {
           setGameState(newState);
@@ -66,6 +76,19 @@ function App() {
     }
   }, []);
 
+  // Update pressed keys state
+  useEffect(() => {
+    if (!inputHandler) return;
+
+    const updateKeys = () => {
+      const keys = inputHandler.getKeys();
+      setPressedKeys(keys);
+    };
+
+    const interval = setInterval(updateKeys, 16); // ~60fps
+    return () => clearInterval(interval);
+  }, [inputHandler]);
+
   const handleReturnToMap = () => {
     if (gameLoop) {
       gameLoop.restorePosition();
@@ -80,6 +103,7 @@ function App() {
         id="wes_com"
         style={{ display: gameState === 'playing' ? 'block' : 'none' }}
       ></canvas>
+      {gameState === 'playing' && <WASDIndicator pressedKeys={pressedKeys} />}
       {gameState === 'entry-work' && (
         <WorkHistoryEntry 
           onReturnToMap={handleReturnToMap}

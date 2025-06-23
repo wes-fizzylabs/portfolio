@@ -7,8 +7,8 @@ import {
 import { PLAYER_CONSTANTS, GAME_CONSTANTS } from '../constants.tsx';
 
 export class Player {
-  public sprite: Sprite;
-  public materials: {
+  public sprite!: Sprite;
+  public materials!: {
     up: SpriteMaterial;
     down: SpriteMaterial;
     left: SpriteMaterial;

@@ -82,8 +82,8 @@ export class GameStateManager {
     player: Player,
     direction: 'up' | 'down' | 'left' | 'right' = 'down'
   ) {
-    const offset = 5; // Move player just a few pixels away from entry point
-    
+    const offset = 5;
+
     switch (direction) {
       case 'up':
         player.sprite.position.y += offset;
